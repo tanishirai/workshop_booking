@@ -1,140 +1,182 @@
-{% extends 'workshop_app/base.html' %}
+{% extends "workshop_app/base.html" %}
 
-{% block title %} Statistics {% endblock %}
+{% block title %}
+    Propose a workshop
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <form method="GET">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h3><u>Filters</u></h3>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{% url 'statistics_app:public' %}" class="btn btn-outline-info">
-                                    <i class="fa fa-times"></i>&nbsp;Clear
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div>From date: {{form.from_date}}</div>
-                        <div>To date: {{form.to_date}}</div>
-                        <div>Workshop: {{form.workshop_type}}</div>
-                        <div>State: {{form.state}}</div>
-                        <div>{{form.sort.help_text}}: {{form.sort}}</div>
-                        {% if request.user.is_authenticated %}
-                        <div>{{form.show_workshops.help_text}}: {{form.show_workshops}}</div>
-                        {% endif %}
-                        <br>
-                        <div class="row justify-content-center">
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-eye"></i>&nbsp;View
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-info" name="download" value="download">
-                                    <i class="fa fa-download"></i>&nbsp;Download
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+<style>
+    /* Hide ALL jQuery UI components */
+    .ui-datepicker, .ui-widget, .ui-widget-content {
+        display: none !important;
+        visibility: hidden !important;
+        z-index: -1 !important;
+    }
+    
+    .propose-workshop-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #1a365d, #2d5aa8);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .form-container {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+    
+    .form-control:focus {
+        border-color: #1a365d;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    }
+    
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #f7fafc;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        background: #38a169;
+        color: white;
+        border: none;
+        padding: 0.875rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .btn-submit:hover {
+        background: #2f855a;
+    }
+    
+    .alert {
+        background: #f0f9ff;
+        color: #1e40af;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="alert">
+        <strong>Note:</strong> Before proposing the workshop, please check about the workshop in the <strong>Workshop Types</strong> section
+    </div>
+
+    <div class="propose-workshop-container">
+        <div class="header">
+            <h2>Propose Workshop</h2>
         </div>
-        <div class="col">
-            <div class="row">
-                <div class="col-md-6">
-                    {% include "statistics_app/paginator.html" %}
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-info" id="state_graph">
-                        <i class="fa fa-bar-chart"></i>&nbsp;State chart
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-info" id="type_graph">
-                        <i class="fa fa-bar-chart"></i>&nbsp;Workshops chart
-                    </button>
-                </div>
-            </div>
-            <table class="table table-responsive-sm">
-                <thead>
-                    <tr>
-                        <th>Sr No.</th>
-                        <th>Coordinator Name</th>
-                        <th>Institute Name</th>
-                        <th>Instructor Name</th>
-                        <th>Workshop Name</th>
-                        <th>Workshop Date</th>
-                    </tr>
-                </thead>
+        
+        <div class="form-container">
+            <form method="post">
                 {% csrf_token %}
-                {% for workshop in objects %}
-                    <tbody>
-                        <tr>
-                            <td>{{ forloop.counter0|add:objects.start_index}}</td>
-                            <td>{{ workshop.coordinator.get_full_name | capfirst }}</td>
-                            <td>{{ workshop.coordinator.profile.institute | capfirst }}</td>
-                            <td>{{ workshop.instructor.get_full_name | capfirst }}</td>
-                            <td>{{ workshop.workshop_type.name }}</td>
-                            <td>{{ workshop.date | date}}</td>
-                        </tr>
-                    </tbody>
-                {% endfor %}
-            </table>
-            {% include "statistics_app/paginator.html" %}
+                
+                <div class="form-group">
+                    <label>Select Workshop Type:</label>
+                    {{ form.workshop_type }}
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Date:</label>
+                    {{ form.date }}
+                </div>
+
+                <div class="checkbox-container">
+                    {{ form.tnc_accepted }}
+                    <span>I accept the <a href="#" id="disp_tnc" data-toggle="modal" data-target="#termsModal">terms and conditions</a></span>
+                </div>
+
+                {% if form.errors %}
+                <div style="background: #fef2f2; color: #dc2626; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                    <strong>Please fix the following errors:</strong>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn-submit">Submit Proposal</button>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- The Modal -->
-<div id="dialog" title="Workshops Statistics">
-    <canvas id="myChart"></canvas>
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms and Conditions</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Terms content will be loaded here -->
+            </div>
+        </div>
+    </div>
 </div>
 
-<script type="text/javascript">
-    var state_labels = {{ws_states|safe}};
-    var state_data = {{ws_count|safe}};
-    var type_labels = {{ws_type|safe}};
-    var type_data = {{ws_type_count|safe}};
-    var chart;
-    $("#state_graph").on("click", function() {
-        show_graph(state_labels, state_data, "State wise workshops");
-    });
-    $("#type_graph").on("click", function() {
-        show_graph(type_labels, type_data, "Type wise workshops");
-    });
-
-    function show_graph(labels, data, graph_name, chart_name) {
-        var ctx = document.getElementById('myChart').getContext('2d');
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'bar',
-
-            // The data for our dataset
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    label: graph_name,
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                }]
-            },
-            // Configuration options go here
-            options: {}
-        });
-        $("#dialog").dialog({
-            width: 900,
-            height: 500
-        });
+<script>
+$(document).ready(function() {
+    // Completely prevent datepicker
+    if ($.fn.datepicker) {
+        $.fn.datepicker = function() { return this; };
     }
+    
+    // Force native date input
+    $('#id_date').attr('type', 'date');
+    
+    // Terms modal
+    $('#disp_tnc').click(function(e) {
+        e.preventDefault();
+        if ($('#id_workshop_type').val() === '') {
+            $('.modal-body').html("<p style='color: red;'>Please select a workshop type first</p>");
+        } else {
+            $.ajax({
+                url: '/workshop/type_tnc/' + $('#id_workshop_type').val(),
+                success: function(data) {
+                    $('.modal-body').html(data.tnc);
+                }
+            });
+        }
+    });
+});
 </script>
-
 {% endblock %}

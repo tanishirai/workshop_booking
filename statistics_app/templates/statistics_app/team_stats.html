@@ -1,48 +1,191 @@
 {% extends 'workshop_app/base.html' %}
+{% load static %}
 
-{% block title %}
- Workshop  Statistics
-{% endblock %}
+{% block title %}Team Statistics - FOSSEE Workshop Booking{% endblock %}
 
 {% block content %}
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2">
-            <ul class="nav nav-pills list-group">
-                {% for team in all_teams %}
-                    <li class="nav-item">
-                        <a href="{% url 'statistics_app:team' team.id %}" class="nav-link list-group-item">
-                            Team {{forloop.counter}}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+<div class="container-fluid statistics-page">
+    <div class="page-header">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-users me-3"></i>
+                Team Statistics
+            </h1>
+            <p class="page-subtitle">Analyze team performance and workshop metrics</p>
         </div>
-        <div class="col-md-8">
-            <br>
-            <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="statistics-container">
+        <!-- Team Selection Sidebar -->
+        <div class="statistics-sidebar">
+            <div class="filter-panel">
+                <h4>
+                    <i class="fas fa-layer-group me-2"></i>
+                    Teams
+                </h4>
+                <div class="list-group">
+                    {% for team in all_teams %}
+                    <a href="{% url 'statistics_app:team' team.id %}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-users me-2"></i>
+                            Team {{ forloop.counter }}
+                        </span>
+                        <span class="badge badge-primary">{{ team.member_count|default:0 }}</span>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-muted text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No teams available
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'statistics_app:team' %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        View All Teams
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Content -->
+        <div class="statistics-content">
+            <div class="chart-area">
+                <div class="chart-buttons-container">
+                    <h3 class="text-center mb-4">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Team Workshop Performance
+                    </h3>
+                </div>
+                
+                <div class="chart-display">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Team Summary Table -->
+            <div class="table-area">
+                <h3>
+                    <i class="fas fa-table me-2"></i>
+                    Team Summary
+                </h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>TEAM</th>
+                                <th>TOTAL MEMBERS</th>
+                                <th>WORKSHOPS CONDUCTED</th>
+                                <th>AVERAGE RATING</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for team in all_teams %}
+                            <tr>
+                                <td>
+                                    <strong>Team {{ forloop.counter }}</strong>
+                                </td>
+                                <td>{{ team.member_count|default:0 }}</td>
+                                <td>
+                                    <span class="badge-success">
+                                        {{ team.workshop_count|default:0 }}
+                                    </span>
+                                </td>
+                                <td>{{ team.average_rating|default:"N/A" }}</td>
+                                <td>
+                                    <span class="badge-success">Active</span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No team data available.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        // The type of chart we want to create
-        type: 'bar',
 
-        // The data for our dataset
-        data: {
-            labels: {{team_labels|safe}},
-            datasets: [{
-                data: {{ws_count|safe}},
-                label: "Team Members Workshops",
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-            }]
-        },
-        // Configuration options go here
-        options: {}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    
+    // Chart data from Django template
+    const chartData = {
+        labels: {{ team_labels|safe }},
+        datasets: [{
+            label: 'Team Members Workshops',
+            data: {{ ws_count|safe }},
+            backgroundColor: [
+                'rgba(26, 54, 93, 0.8)',
+                'rgba(45, 90, 168, 0.8)',
+                'rgba(56, 161, 105, 0.8)',
+                'rgba(214, 158, 46, 0.8)',
+                'rgba(229, 62, 62, 0.8)',
+                'rgba(107, 114, 128, 0.8)'
+            ],
+            borderColor: [
+                'rgba(26, 54, 93, 1)',
+                'rgba(45, 90, 168, 1)',
+                'rgba(56, 161, 105, 1)',
+                'rgba(214, 158, 46, 1)',
+                'rgba(229, 62, 62, 1)',
+                'rgba(107, 114, 128, 1)'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Team Workshop Performance Analysis',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Workshops'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Teams'
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
     });
+});
 </script>
 {% endblock %}
