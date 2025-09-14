@@ -20,14 +20,16 @@
         upto.setFullYear(dateToday.getFullYear() + 1);
 
         $(function () {
-            $(".datepicker").datepicker({
+            // Initialize datepicker with simple styling
+            $("#id_date").datepicker({
                 changeMonth: true,
                 changeYear: true,
                 minDate: dateToday,
                 maxDate: upto,
                 beforeShowDay: $.datepicker.noWeekends,
+                dateFormat: 'mm/dd/yy',
+                showButtonPanel: true
             });
-
 
             $('#disp_tnc').click(function (e) {
                 e.preventDefault()
@@ -46,76 +48,428 @@
     </script>
 {% endblock %}
 
-
 {% block content %}
-    <style type="text/css">
-        .errorlist {
-            color: red;
-        }
+<style type="text/css">
+    .errorlist {
+        color: red;
+    }
 
-    .modal-open .modal{
+    .modal-open .modal {
         overflow-y: hidden;
     }
-    </style>
 
-    <div class="container" align="center">
-        <div class="alert alert-info">
-            Note: Before proposing the workshop, please check about the workshop in the
+    /* Fix for propose workshop form - override base.css styling */
+    .propose-workshop-form {
+        background: var(--bg-body) !important;
+        padding: 2rem 0 !important;
+    }
+
+    .propose-workshop-form .professional-card {
+        max-width: 600px !important;
+        margin: 0 auto !important;
+        background: var(--bg-white) !important;
+        border-radius: 12px !important;
+        box-shadow: var(--shadow-md) !important;
+        border: 1px solid var(--border-light) !important;
+        overflow: hidden !important;
+    }
+
+    .propose-workshop-form .card-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+        color: var(--text-white) !important;
+        padding: 1.5rem 2rem !important;
+        text-align: center !important;
+        font-size: 1.2rem !important;
+        font-weight: 600 !important;
+    }
+
+    .propose-workshop-form .card-body {
+        padding: 2.5rem !important;
+    }
+
+    /* Form field styling */
+    .propose-workshop-form .form-field {
+        margin-bottom: 2rem !important;
+    }
+
+    .propose-workshop-form .form-field label {
+        display: block !important;
+        font-weight: 600 !important;
+        color: var(--text-dark) !important;
+        margin-bottom: 0.75rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .propose-workshop-form select,
+    .propose-workshop-form input[type="text"] {
+        width: 100% !important;
+        padding: 0.875rem 1rem !important;
+        border: 2px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        font-size: 0.9rem !important;
+        background: var(--bg-white) !important;
+        color: var(--text-dark) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .propose-workshop-form select:focus,
+    .propose-workshop-form input[type="text"]:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(26, 54, 93, 0.15) !important;
+        outline: none !important;
+    }
+
+    /* FIXED Checkbox styling */
+    .propose-workshop-form .checkbox-field {
+        display: flex !important;
+        align-items: center !important;
+        gap: 1rem !important;
+        margin-bottom: 2rem !important;
+        padding: 1.25rem !important;
+        background: var(--bg-light) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border-light) !important;
+    }
+
+    .propose-workshop-form .checkbox-field input[type="checkbox"] {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+        cursor: pointer !important;
+        accent-color: var(--primary) !important;
+        border-radius: 3px !important;
+        border: 2px solid var(--border-medium) !important;
+        background: var(--bg-white) !important;
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        -moz-appearance: checkbox !important;
+    }
+
+    .propose-workshop-form .checkbox-field input[type="checkbox"]:focus {
+        box-shadow: 0 0 0 0.2rem rgba(26, 54, 93, 0.15) !important;
+        outline: none !important;
+    }
+
+    .propose-workshop-form .checkbox-field .checkbox-text {
+        color: var(--text-gray) !important;
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        flex: 1 !important;
+    }
+
+    .propose-workshop-form .checkbox-field a {
+        color: var(--primary) !important;
+        text-decoration: underline !important;
+        font-weight: 600 !important;
+    }
+
+    .propose-workshop-form .checkbox-field a:hover {
+        color: var(--primary-light) !important;
+    }
+
+    /* Error styling */
+    .propose-workshop-form .error-container {
+        background: #fef2f2 !important;
+        border: 2px solid var(--danger) !important;
+        border-radius: 8px !important;
+        padding: 1rem !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .propose-workshop-form .error-container h5 {
+        color: var(--danger) !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .propose-workshop-form .errorlist {
+        color: var(--danger) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+    }
+
+    .propose-workshop-form .errorlist li {
+        margin-bottom: 0.5rem !important;
+        padding-left: 1rem !important;
+        position: relative !important;
+    }
+
+    .propose-workshop-form .errorlist li::before {
+        content: "•" !important;
+        color: var(--danger) !important;
+        position: absolute !important;
+        left: 0 !important;
+    }
+
+    /* Submit button */
+    .propose-workshop-form .btn-submit {
+        background: var(--success) !important;
+        color: var(--text-white) !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.875rem 2rem !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+        transition: all 0.3s ease !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    .propose-workshop-form .btn-submit:hover {
+        background: #2f855a !important;
+        transform: translateY(-2px) !important;
+        box-shadow: var(--shadow-lg) !important;
+    }
+
+    /* Alert styling */
+    .propose-workshop-form .info-alert {
+        background: #f0f9ff !important;
+        color: var(--accent) !important;
+        border: 1px solid rgba(43, 108, 176, 0.2) !important;
+        border-radius: 12px !important;
+        padding: 1.25rem !important;
+        margin-bottom: 2rem !important;
+        text-align: center !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Modal styling */
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+        color: var(--text-white) !important;
+        border-bottom: none !important;
+    }
+
+    .modal-body {
+        padding: 2rem !important;
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+    }
+
+    /* SIMPLE CALENDAR STYLING - Clean and Professional */
+    .ui-datepicker {
+        z-index: 10000 !important;
+        background: var(--bg-white) !important;
+        border: 2px solid var(--border-medium) !important;
+        border-radius: 12px !important;
+        box-shadow: var(--shadow-xl) !important;
+        padding: 0 !important;
+        width: 280px !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .ui-datepicker-header {
+        background: var(--primary) !important;
+        color: var(--text-white) !important;
+        border: none !important;
+        border-radius: 10px 10px 0 0 !important;
+        padding: 0.75rem !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+
+    .ui-datepicker-title {
+        color: var(--text-white) !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+
+    .ui-datepicker-prev,
+    .ui-datepicker-next {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 30px !important;
+        height: 30px !important;
+        cursor: pointer !important;
+    }
+
+    .ui-datepicker-prev:hover,
+    .ui-datepicker-next:hover {
+        background: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .ui-datepicker table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 2px !important;
+        padding: 0.5rem !important;
+    }
+
+    .ui-datepicker th {
+        background: var(--bg-light) !important;
+        color: var(--text-gray) !important;
+        font-weight: 600 !important;
+        font-size: 0.8rem !important;
+        padding: 0.5rem 0.25rem !important;
+        text-align: center !important;
+        border-radius: 4px !important;
+    }
+
+    .ui-datepicker td {
+        padding: 2px !important;
+    }
+
+    .ui-datepicker td a,
+    .ui-datepicker td span {
+        display: block !important;
+        padding: 0.5rem !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        border-radius: 6px !important;
+        font-size: 0.9rem !important;
+        color: var(--text-dark) !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .ui-datepicker td a:hover {
+        background: var(--bg-light) !important;
+        color: var(--primary) !important;
+        border-color: var(--border-light) !important;
+    }
+
+    .ui-datepicker td .ui-state-active,
+    .ui-datepicker td .ui-state-highlight {
+        background: var(--primary) !important;
+        color: var(--text-white) !important;
+        border-color: var(--primary) !important;
+        font-weight: 600 !important;
+    }
+
+    .ui-datepicker td .ui-state-disabled {
+        color: var(--text-light) !important;
+        background: var(--bg-light) !important;
+        cursor: not-allowed !important;
+    }
+
+    .ui-datepicker .ui-datepicker-buttonpane {
+        background: var(--bg-light) !important;
+        border-top: 1px solid var(--border-light) !important;
+        padding: 0.75rem !important;
+        text-align: center !important;
+    }
+
+    .ui-datepicker .ui-datepicker-buttonpane button {
+        background: var(--primary) !important;
+        color: var(--text-white) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 0.5rem 1rem !important;
+        margin: 0 0.25rem !important;
+        cursor: pointer !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+    }
+
+    .ui-datepicker .ui-datepicker-buttonpane button:hover {
+        background: var(--primary-light) !important;
+    }
+
+    /* Date input field styling */
+    .propose-workshop-form #id_date {
+        width: 100% !important;
+        padding: 0.875rem 1rem !important;
+        border: 2px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        font-size: 0.9rem !important;
+        background: var(--bg-white) !important;
+        color: var(--text-dark) !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+    }
+
+    .propose-workshop-form #id_date:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(26, 54, 93, 0.15) !important;
+        outline: none !important;
+    }
+</style>
+
+<div class="propose-workshop-form">
+    <div class="container">
+        <div class="info-alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Note:</strong> Before proposing the workshop, please check about the workshop in the
             <strong>Workshop Types</strong> section
         </div>
-        <br><br>
-        <div class="col-md-6 col-md-offset-6">
-            <div class="card border-primary">
-                <div class="card-header">
-                    <h3>Propose Workshop</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <form method="post">
-                            {% csrf_token %}
-                            <br/>
-                            {{ form.workshop_type }}
-                            <br>
-                            {{ form.date }}
-                            <br>
-                            {{ form.tnc_accepted }} I accept the
-                            <a href="#" id="disp_tnc" data-toggle="modal"
-                            data-target="#exampleModalCenter">
+
+        <div class="professional-card">
+            <div class="card-header">
+                Propose Workshop
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-field">
+                        <label for="{{ form.workshop_type.id_for_label }}">
+                            <i class="fas fa-graduation-cap me-2"></i>
+                            Select Workshop Type:
+                        </label>
+                        {{ form.workshop_type }}
+                    </div>
+
+                    <div class="form-field">
+                        <label for="{{ form.date.id_for_label }}">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Preferred Date:
+                        </label>
+                        {{ form.date }}
+                    </div>
+
+                    <div class="checkbox-field">
+                        {{ form.tnc_accepted }}
+                        <div class="checkbox-text">
+                            I accept the
+                            <a href="#" id="disp_tnc" data-toggle="modal" data-target="#exampleModalCenter">
                                 terms and conditions
                             </a>
-                            <br>
-                            {% if form.errors %}
-                                <br>
-                                <div style="text-align: left; border: 1px solid red; padding-top: 5px">
-                                    <h5 style="text-align: center; color: red; font-weight: bolder">Errors</h5>
-                                    {{ form.errors }}
-                                </div>
-                            {% endif %}
-                            <br>
-                            <button class="btn btn-success" type="submit">Submit</button>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <br>
 
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Terms and Conditions</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    {% if form.errors %}
+                    <div class="error-container">
+                        <h5>
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Errors Found
+                        </h5>
+                        {{ form.errors }}
+                    </div>
+                    {% endif %}
+
+                    <button class="btn btn-submit" type="submit">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Submit Proposal
                     </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">
+                    <i class="fas fa-file-contract me-2"></i>
+                    Terms and Conditions
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Terms content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
