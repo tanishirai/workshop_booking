@@ -1,135 +1,310 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 {% load static %}
 {% load custom_filters %}
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>
         {% block title %}
-            HomePage
+        FOSSEE Workshop Booking System
         {% endblock %}
     </title>
 
-    <script src="{% static 'workshop_app/js/jquery-3.4.1.min.js' %}"></script>
-    <script src="{% static 'workshop_app/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'workshop_app/js/popper.min.js' %}"></script>
-    <script src="{% static 'workshop_app/js/toastr.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Modern CSS Framework -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!-- Toastr for notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- Custom Base CSS - AFTER Bootstrap -->
+<link rel="stylesheet" href="{% static 'workshop_app/css/base.css' %}?v={% now 'U' %}" type="text/css" />
+    <!-- Chart.js - CHANGED TO 2.9.3 FOR COMPATIBILITY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
+    <!-- jQuery and UI -->
+    <script src="{% static 'workshop_app/js/jquery-3.4.1.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     {% block extra-dependencies %}
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static 'workshop_app/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'workshop_app/css/toastr.min.css' %}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'workshop_app/css/base.css' %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static 'workshop_app/css/font-awesome.css' %}" type="text/css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-
     {% block extra-custom-scripts %}
     {% endblock %}
-
 </head>
 
 <body>
-{% block header %}
-    <nav class="navbar navbar-dark navbar-expand-lg bg-dark fixed-top">
-        {% if user.is_authenticated %}
-        <a class="navbar-brand text-white" href="{% url 'workshop_app:index' %}">FOSSEE Workshops</a>
-        {% else %}
-        <a class="navbar-brand text-white" href="{{request.scheme}}://{{request.get_host}}">FOSSEE Workshops</a>
-        {% endif %}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/">
-                        Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'statistics_app:public' %}">
-                        Workshop Statistics
-                    </a>
-                </li>
-            </ul>
+    {% block header %}
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
             {% if user.is_authenticated %}
-            <ul class="navbar-nav mr-auto">
-                {% if request.user|has_group:"instructor" %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'statistics_app:team' %}">
-                        Team Statistics
-                    </a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'workshop_app:workshop_status_instructor' %}">
-                        Workshop Status
-                    </a>
-                </li>
-                {% if not request.user|has_group:"instructor" %}
+            <a class="navbar-brand" href="{% url 'workshop_app:index' %}">
+                <i class="fas fa-graduation-cap"></i>
+                FOSSEE Workshop Booking
+            </a>
+            {% else %}
+            <a class="navbar-brand" href="{{request.scheme}}://{{request.get_host}}">
+                <i class="fas fa-graduation-cap"></i>
+                FOSSEE Workshop Booking
+            </a>
+            {% endif %}
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fas fa-bars text-white"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'workshop_app:propose_workshop' %}">
-                            Propose Workshop
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home"></i>Home
                         </a>
                     </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'workshop_app:workshop_type_list' %}">
-                        Workshop Types
-                    </a>
-                </li>
-            </ul>
-            <div class="my-2 my-lg-0">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           <span class="material-icons" style="vertical-align: middle">account_circle</span>
-                            <p style="display: inline; vertical-align: middle">
-                                {{user.get_full_name|title}}
-                            </p>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'statistics_app:public' %}">
+                            <i class="fas fa-chart-bar"></i>Workshop Statistics
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'workshop_app:view_own_profile' %}">Profile</a>
-                            <a class="dropdown-item" href="{% url 'password_change' %}">
-                                 Change Password
-                            </a>
-                            <a class="dropdown-item" href="{% url 'workshop_app:logout' %}">Logout</a>
-                        </div>
                     </li>
+                    {% if user.is_authenticated %}
+                    {% if request.user|has_group:"instructor" %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'statistics_app:team' %}">
+                            <i class="fas fa-users"></i>Team Statistics
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'workshop_app:workshop_status_instructor' %}">
+                            <i class="fas fa-tasks"></i>Workshop Status
+                        </a>
+                    </li>
+                    {% if not request.user|has_group:"instructor" %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'workshop_app:propose_workshop' %}">
+                            <i class="fas fa-plus-circle"></i>Propose Workshop
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'workshop_app:workshop_type_list' %}">
+                            <i class="fas fa-list"></i>Workshop Types
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
+
+                {% if user.is_authenticated %}
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="d-none d-md-inline ms-2">{{user.get_full_name|title|default:user.username}}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'workshop_app:view_own_profile' %}">
+                                    <i class="fas fa-user"></i>Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'password_change' %}">
+                                    <i class="fas fa-key"></i>Change Password
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'workshop_app:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar-nav">
+                    <a class="nav-link" href="{% url 'workshop_app:login' %}">
+                        <i class="fas fa-sign-in-alt"></i>Login
+                    </a>
+                    <a class="nav-link" href="{% url 'workshop_app:register' %}">
+                        <i class="fas fa-user-plus"></i>Register
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <div class="main-content">
+        <!-- Alert Messages -->
+        {% if messages %}
+        <div class="container-fluid">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}
+        <!-- Professional Page Header -->
+        <div class="page-header">
+            <div class="container">
+                <h1 class="page-title">
+                    <i class="fas fa-graduation-cap me-3"></i>
+                    Welcome to FOSSEE Workshop Booking System
+                </h1>
+                <p class="page-subtitle">Professional workshop management platform for educational institutions</p>
+            </div>
+        </div>
+
+        <div class="container">
+            {% if not user.is_authenticated %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="professional-card text-center">
+                        <div class="card-body py-6">
+                            <i class="fas fa-graduation-cap fa-4x text-primary mb-4"></i>
+                            <h3 class="mb-3">Get Started</h3>
+                            <p class="text-muted mb-5">Access the workshop booking system to manage and participate in
+                                educational workshops.</p>
+                            <div class="d-flex gap-3 justify-content-center">
+                                <a href="{% url 'workshop_app:login' %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i>Login
+                                </a>
+                                <a href="{% url 'workshop_app:register' %}" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-user-plus"></i>Register
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="professional-card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chalkboard-teacher me-2"></i>For Instructors
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <p class="text-muted mb-4 flex-grow-1">Manage your workshops, view comprehensive statistics,
+                                and coordinate effectively with participants across multiple institutions.</p>
+                            <a href="{% url 'workshop_app:workshop_status_instructor' %}" class="btn btn-primary">
+                                <i class="fas fa-tachometer-alt"></i>View Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="professional-card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-users me-2"></i>For Coordinators
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <p class="text-muted mb-4 flex-grow-1">Propose new workshops and coordinate with expert
+                                instructors to bring quality educational content to your institution.</p>
+                            <a href="{% url 'workshop_app:propose_workshop' %}" class="btn btn-success">
+                                <i class="fas fa-plus-circle"></i>Propose Workshop
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             {% endif %}
         </div>
-    </nav>
-{% endblock %}
+        {% endblock %}
+    </div>
 
-<div class="base-content">
-    {% block content %}
-        <h1>Base Template Content. Please override me</h1>
-    {% endblock %}
-</div>
+    <!-- Professional Footer -->
+    <footer class="footer">
+        {% block footer %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="mb-3">FOSSEE Workshop Booking System</h6>
+                    <p class="mb-2">Developed by FOSSEE Group, Indian Institute of Technology Bombay</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-4 align-items-center mb-3">
+                        <a href="https://fossee.in" class="text-decoration-none">
+                            <i class="fas fa-external-link-alt me-2"></i>FOSSEE.in
+                        </a>
+                        <a href="https://github.com/FOSSEE" class="text-decoration-none">
+                             <i class="fa-brands fa-github me-2"></i>GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-1 opacity-25">
+            <div class="text-center">
+                <small>© 2025 FOSSEE, Indian Institute of Technology Bombay. All rights reserved.</small>
+            </div>
+        </div>
+        {% endblock %}
+    </footer>
 
-<script>
-    {% if messages %}
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Enhanced Notifications -->
+    <script>
+        // Configure toastr for professional theme
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        {% if messages %}
         {% for message in messages %}
-            toastr[{% if message.tags %} "{{ message.tags }}" {% else %} "info" {% endif %}]("{{ message }}");
+        toastr[{% if message.tags %} "{{ message.tags }}" {% else %} "info" {% endif %}]("{{ message }}");
         {% endfor %}
-    {% endif %}
-</script>
+        {% endif %}
 
+        // Professional loading states
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function () {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.disabled) {
+                        submitBtn.classList.add('loading');
+                        submitBtn.disabled = true;
+
+                        setTimeout(() => {
+                            submitBtn.classList.remove('loading');
+                            submitBtn.disabled = false;
+                        }, 10000);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
-<footer class="footer">
-    {% block footer %}
-       <div class="container">
-           Developed by FOSSEE group, IIT Bombay
-       </div> 
-    {% endblock %}
-</footer>
+
 </html>
