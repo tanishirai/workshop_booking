@@ -16,32 +16,57 @@ lib/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Django stuff:
-*.log
+# Django stuff
 local_settings.py
 
-# PyBuilder
-target/
-
-#Database
+# Database
 db.sqlite3
 
-#MAC OS specific
+# MAC OS specific
 .DS_Store
 
-#Pycharm
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/workshop_portal.iml
-.idea/workspace.xml
-.idea/vcs.xml
+# Virtual Environments
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
 
-#Emacs
-\#*#
-#Vim
+# Environment variables
+.env
+.envrc
+
+# PyCharm
+.idea/
+
+# Vim
 *.swp
 
-#images/gif
+# Images/gif
 *.png
 *.gif
+
+# Coverage and Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE Files
+.vscode/
+*.code-workspace
+
+# System Files
+Thumbs.db
+Desktop.ini
+
+# Your Custom Directories
+%APPDATA%/
+cms/migrations/
+teams/migrations/
+
+# Django Additional Files
+media/
+staticfiles/
+static_root/
