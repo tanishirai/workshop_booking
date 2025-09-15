@@ -7,30 +7,39 @@ This repository contains my enhanced version of the FOSSEE Workshop Booking Syst
 ## Setup Instructions
 
 1. **Clone this repository:**
-`` git clone https://github.com/tanishirai/workshop_booking.git
-`` cd workshop_booking
+   
+    ` git clone https://github.com/tanishirai/workshop_booking.git `
 
+    ` cd workshop_booking `
+  
 2. **Set up virtual environment:**
-python -m venv venv
-source venv/bin/activate # On Windows: venv\Scripts\Activate.ps1
+   
+    `python -m venv venv`
+   
+    `source venv/bin/activate # On Windows: venv\Scripts\Activate.ps1`
 
-3. **Install dependencies:**
-pip install -r requirements.txt
+4. **Install dependencies:**
+   
+   `pip install -r requirements.txt`
 
-4. **Apply database migrations:**
-python manage.py migrate
-
-
-5. **Create superuser (optional):**
-python manage.py createsuperuser
-
-
-6. **Start the development server:**
-python manage.py runserver
+5. **Apply database migrations:**
+   
+    `python manage.py migrate`
 
 
-7. **Access the application:**
-Open your browser and navigate to `http://127.0.0.1:8000/`
+6. **Create superuser (optional):**
+   
+    `python manage.py createsuperuser`
+
+
+7. **Start the development server:**
+   
+    `python manage.py runserver`
+
+
+8. **Access the application:**
+   
+    Open your browser and navigate to `http://127.0.0.1:8000/`
 
 ## Design Rationale
 
@@ -107,14 +116,7 @@ The most challenging aspect was **restructuring the statistics dashboard** while
 
 ## Visual Showcase
 
-*Before and after screenshots demonstrate the transformation from a basic functional interface to a modern, mobile-optimized user experience. Key improvements include enhanced readability, intuitive navigation, and responsive design across all device sizes.*
 
-**Screenshots Location**: `/screenshots/` folder contains:
-- `before-mobile.png` - Original mobile interface
-- `after-mobile.png` - Enhanced mobile interface  
-- `before-desktop.png` - Original desktop interface
-- `after-desktop.png` - Enhanced desktop interface
-- `dashboard-comparison.png` - Statistics dashboard improvements
 
 ## Technical Implementation
 
