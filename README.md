@@ -116,6 +116,30 @@ The most challenging aspect was **restructuring the statistics dashboard** while
 
 ## Visual Showcase
 
+### Before
+
+- Login
+
+   <img width="768" height="631" alt="Screenshot 2025-09-12 213154" src="https://github.com/user-attachments/assets/0de7548f-6dea-4252-9b5d-0c682a5dac13" />
+   
+
+### After
+
+1. Login
+   
+   <img width="758" height="716" alt="127 0 0 1_8000_workshop_login_" src="https://github.com/user-attachments/assets/ff449acf-e043-4c11-b7cd-090ef51ae8d2" />
+   
+2. Instructor
+   
+   <img width="758" height="716" alt="image" src="https://github.com/user-attachments/assets/2daf4525-2501-4fd1-a1c0-26a90b9b8414" />
+
+3. Coordinator
+
+   <img width="758" height="716" alt="image" src="https://github.com/user-attachments/assets/9554693f-433d-4111-b06d-d7c011128a0c" />
+
+   **Responsive**
+   
+   <img width="250" height="900" alt="127 0 0 1_8000_workshop_login_(iPhone SE)" src="https://github.com/user-attachments/assets/f6103f6d-5cb9-4234-9c39-f4f45c740744" />
 
 
 ## Technical Implementation
