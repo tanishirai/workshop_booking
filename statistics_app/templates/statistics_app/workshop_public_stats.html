@@ -1,182 +1,272 @@
-{% extends "workshop_app/base.html" %}
+{% extends 'workshop_app/base.html' %}
+{% load static %}
 
-{% block title %}
-    Propose a workshop
-{% endblock %}
+{% block title %} Statistics {% endblock %}
 
 {% block content %}
-<style>
-    /* Hide ALL jQuery UI components */
-    .ui-datepicker, .ui-widget, .ui-widget-content {
-        display: none !important;
-        visibility: hidden !important;
-        z-index: -1 !important;
-    }
-    
-    .propose-workshop-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-    
-    .header {
-        background: linear-gradient(135deg, #1a365d, #2d5aa8);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-    }
-    
-    .form-container {
-        padding: 2rem;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #333;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 6px;
-        font-size: 0.9rem;
-    }
-    
-    .form-control:focus {
-        border-color: #1a365d;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
-    }
-    
-    .checkbox-container {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        background: #f7fafc;
-        padding: 1rem;
-        border-radius: 6px;
-        margin-bottom: 1.5rem;
-    }
-    
-    .btn-submit {
-        width: 100%;
-        background: #38a169;
-        color: white;
-        border: none;
-        padding: 0.875rem;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    
-    .btn-submit:hover {
-        background: #2f855a;
-    }
-    
-    .alert {
-        background: #f0f9ff;
-        color: #1e40af;
-        padding: 1rem;
-        border-radius: 6px;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-</style>
-
-<div class="container">
-    <div class="alert">
-        <strong>Note:</strong> Before proposing the workshop, please check about the workshop in the <strong>Workshop Types</strong> section
-    </div>
-
-    <div class="propose-workshop-container">
-        <div class="header">
-            <h2>Propose Workshop</h2>
-        </div>
-        
-        <div class="form-container">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label>Select Workshop Type:</label>
-                    {{ form.workshop_type }}
+<div class="container-fluid statistics-page">
+    <div class="statistics-container">
+        <!-- Enhanced Sidebar with Original Form -->
+        <div class="statistics-sidebar">
+            <form method="GET">
+                <div class="filter-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>
+                            <i class="fas fa-filter me-2"></i>
+                            Filters
+                        </h4>
+                        <a href="{% url 'statistics_app:public' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-times me-1"></i>Clear
+                        </a>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">From date:</label>
+                        {{form.from_date}}
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">To date:</label>
+                        {{form.to_date}}
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Workshop:</label>
+                        {{form.workshop_type}}
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">State:</label>
+                        {{form.state}}
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">{{form.sort.help_text}}:</label>
+                        {{form.sort}}
+                    </div>
+                    
+                    {% if request.user.is_authenticated %}
+                    <div class="form-check mb-4">
+                        {{form.show_workshops}}
+                        <label class="form-check-label" for="{{form.show_workshops.id_for_label}}">
+                            {{form.show_workshops.help_text}}
+                        </label>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-eye me-2"></i>View
+                        </button>
+                        <button type="submit" class="btn btn-info" name="download" value="download">
+                            <i class="fas fa-download me-2"></i>Download
+                        </button>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Preferred Date:</label>
-                    {{ form.date }}
-                </div>
-
-                <div class="checkbox-container">
-                    {{ form.tnc_accepted }}
-                    <span>I accept the <a href="#" id="disp_tnc" data-toggle="modal" data-target="#termsModal">terms and conditions</a></span>
-                </div>
-
-                {% if form.errors %}
-                <div style="background: #fef2f2; color: #dc2626; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                    <strong>Please fix the following errors:</strong>
-                    {{ form.errors }}
-                </div>
-                {% endif %}
-
-                <button type="submit" class="btn-submit">Submit Proposal</button>
             </form>
         </div>
-    </div>
-</div>
-
-<!-- Terms Modal -->
-<div class="modal fade" id="termsModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Terms and Conditions</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+        
+        <!-- Main Content - Clean Layout -->
+        <div class="statistics-content">
+            
+            <!-- Top Controls Row -->
+            <div class="top-controls mb-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        {% include "statistics_app/paginator.html" %}
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-buttons justify-content-end">
+                            <button class="btn btn-info" id="state_graph">
+                                <i class="fas fa-chart-bar me-2"></i>State chart
+                            </button>
+                            <button class="btn btn-info" id="type_graph">
+                                <i class="fas fa-chart-line me-2"></i>Workshops chart
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <!-- Terms content will be loaded here -->
+            
+            <!-- TABLE SECTION ONLY -->
+            <div class="table-area">
+                <h3>
+                    <i class="fas fa-table me-2"></i>
+                    Workshop Details
+                </h3>
+                <div class="table-responsive">
+                    <table class="table professional-table">
+                        <thead>
+                            <tr>
+                                <th>SR NO.</th>
+                                <th>COORDINATOR NAME</th>
+                                <th>INSTITUTE NAME</th>
+                                <th>INSTRUCTOR NAME</th>
+                                <th>WORKSHOP NAME</th>
+                                <th>WORKSHOP DATE</th>
+                            </tr>
+                        </thead>
+                        {% csrf_token %}
+                        {% for workshop in objects %}
+                        <tbody>
+                            <tr>
+                                <td>{{ forloop.counter0|add:objects.start_index}}</td>
+                                <td>
+                                    <a href="#" class="text-primary">
+                                        {{ workshop.coordinator.get_full_name | capfirst }}
+                                    </a>
+                                </td>
+                                <td>{{ workshop.coordinator.profile.institute | capfirst }}</td>
+                                <td>{{ workshop.instructor.get_full_name | capfirst }}</td>
+                                <td>
+                                    <span class="badge-primary">
+                                        {{ workshop.workshop_type.name }}
+                                    </span>
+                                </td>
+                                <td>{{ workshop.date | date:"M. d, Y"}}</td>
+                            </tr>
+                        </tbody>
+                        {% empty %}
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No workshops found matching your criteria.
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+                
+                <!-- Bottom Pagination -->
+                <div class="pagination-area">
+                    {% include "statistics_app/paginator.html" %}
+                </div>
             </div>
+            
         </div>
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    // Completely prevent datepicker
-    if ($.fn.datepicker) {
-        $.fn.datepicker = function() { return this; };
-    }
+<!-- Chart Modal - ONLY PLACE WHERE CHART APPEARS -->
+<div id="dialog" title="Workshop Statistics" class="chart-modal">
+    <div class="chart-modal-content">
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+<!-- Keep Original JavaScript -->
+<script type="text/javascript">
+    // Keep all original variables
+    var state_labels = {{ws_states|safe}};
+    var state_data = {{ws_count|safe}};
+    var type_labels = {{ws_type|safe}};
+    var type_data = {{ws_type_count|safe}};
+    var chart;
     
-    // Force native date input
-    $('#id_date').attr('type', 'date');
+    // Keep original event handlers
+    $("#state_graph").on("click", function() {
+        show_graph(state_labels, state_data, "State wise workshops");
+    });
     
-    // Terms modal
-    $('#disp_tnc').click(function(e) {
-        e.preventDefault();
-        if ($('#id_workshop_type').val() === '') {
-            $('.modal-body').html("<p style='color: red;'>Please select a workshop type first</p>");
-        } else {
-            $.ajax({
-                url: '/workshop/type_tnc/' + $('#id_workshop_type').val(),
-                success: function(data) {
-                    $('.modal-body').html(data.tnc);
+    $("#type_graph").on("click", function() {
+        show_graph(type_labels, type_data, "Type wise workshops");
+    });
+
+// Enhanced show_graph function with Font Awesome solid circle-xmark close button
+function show_graph(labels, data, graph_name, chart_name) {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    if(chart) chart.destroy();
+    
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                label: graph_name,
+                backgroundColor: [
+                    'rgba(26, 54, 93, 0.8)',
+                    'rgba(45, 90, 168, 0.8)',
+                    'rgba(56, 161, 105, 0.8)',
+                    'rgba(214, 158, 46, 0.8)',
+                    'rgba(229, 62, 62, 0.8)',
+                    'rgba(107, 114, 128, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(26, 54, 93, 1)',
+                    'rgba(45, 90, 168, 1)',
+                    'rgba(56, 161, 105, 1)',
+                    'rgba(214, 158, 46, 1)',
+                    'rgba(229, 62, 62, 1)',
+                    'rgba(107, 114, 128, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: graph_name,
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
                 }
-            });
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Count'
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
         }
     });
-});
+    
+    // Enhanced dialog with Font Awesome solid circle-xmark close button
+    $("#dialog").dialog({
+        width: 900,
+        height: 500,
+        modal: true,
+        resizable: true,
+        draggable: true,
+        dialogClass: 'professional-dialog chart-dialog',
+        close: function() {
+            if(chart) chart.destroy();
+        },
+        open: function() {
+            // Replace close button with Font Awesome solid circle-xmark icon
+            $('.ui-dialog-titlebar-close .ui-icon')
+                .removeClass('ui-icon ui-icon-closethick')
+                .addClass('fa-solid fa-circle-xmark')
+                .css({
+                    'color': '#74C0FC',
+                    'font-size': '24px',
+                    'width': '32px',
+                    'height': '32px',
+                    'line-height': '32px',
+                    'text-align': 'center'
+                });
+            
+            // Ensure close button is visible and functional
+            $('.ui-dialog-titlebar-close').show();
+        }
+    });
+}
 </script>
 {% endblock %}

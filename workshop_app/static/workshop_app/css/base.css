@@ -57,21 +57,14 @@ i[class*="fa"] {
     -moz-osx-font-smoothing: grayscale !important;
 }
 
-/* Regular Font Awesome icons */
-.fa-regular {
-    font-weight: 400 !important;
-}
-
-/* FA-BRANDS SUPPORT FOR GITHUB */
-.fa-brands {
-    font-family: "Font Awesome 6 Brands" !important;
-    font-weight: 400 !important;
+/* Font Awesome Solid Support */
+.fa-solid {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
     font-style: normal !important;
     display: inline-block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
 }
 
 /* SPECIFIC ICON CONTENT FIXES */
@@ -88,11 +81,8 @@ i[class*="fa"] {
 .fa-graduation-cap::before { content: "\f19d" !important; }
 .fa-bars::before { content: "\f0c9" !important; }
 .fa-external-link-alt::before { content: "\f35d" !important; }
-.fa-code-branch::before { content: "\f126" !important; }
-/* GITHUB ICON - COMPLETE SUPPORT */
 .fa-github::before { content: "\f09b" !important; }
 .fab.fa-github::before { content: "\f09b" !important; }
-.fa-brands.fa-github::before { content: "\f09b" !important; font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; }
 .fa-sign-in-alt::before { content: "\f2f6" !important; }
 .fa-user-plus::before { content: "\f234" !important; }
 .fa-tachometer-alt::before { content: "\f3fd" !important; }
@@ -104,6 +94,7 @@ i[class*="fa"] {
 .fa-times::before { content: "\f00d" !important; }
 .fa-table::before { content: "\f0ce" !important; }
 .fa-circle-xmark::before { content: "\f057" !important; }
+.fa-solid.fa-circle-xmark::before { content: "\f057" !important; }
 
 /* NAVBAR */
 .navbar {
@@ -590,24 +581,9 @@ table tbody tr:last-child td, .table tbody tr:last-child td {
     color: rgba(255, 255, 255, 0.7) !important;
     text-decoration: none !important;
     transition: color 0.3s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
 }
 
 .footer a:hover {
-    color: var(--text-white) !important;
-}
-
-/* Footer GitHub link styling */
-.footer .fa-brands.fa-github,
-.footer .fas.fa-code-branch {
-    color: rgba(255, 255, 255, 0.8) !important;
-    margin-right: 0.5rem !important;
-    font-size: 1.1rem !important;
-}
-
-.footer a:hover .fa-brands.fa-github,
-.footer a:hover .fas.fa-code-branch {
     color: var(--text-white) !important;
 }
 
@@ -752,13 +728,7 @@ body {
     font-style: normal !important;
 }
 
-/* Brand icons override */
-.navbar .fa-brands, .nav-link .fa-brands, .dropdown-item .fa-brands, .navbar-brand .fa-brands, .btn .fa-brands, .card-header .fa-brands, .alert .fa-brands, .footer .fa-brands {
-    font-family: "Font Awesome 6 Brands" !important;
-    font-weight: 400 !important;
-}
-
-/* CUSTOM FONT AWESOME CLOSE BUTTON FOR CHART MODAL */
+/* CUSTOM FONT AWESOME SOLID CIRCLE-XMARK CLOSE BUTTON FOR CHART MODAL */
 .chart-dialog .ui-dialog-titlebar {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
     color: var(--text-white) !important;
@@ -797,11 +767,11 @@ body {
     display: none !important;
 }
 
-/* Add Font Awesome icon */
+/* Add Font Awesome solid circle-xmark icon */
 .chart-dialog .ui-dialog-titlebar-close:before {
     content: "\f057" !important;
     font-family: "Font Awesome 6 Free" !important;
-    font-weight: 400 !important;
+    font-weight: 900 !important;
     font-size: 24px !important;
     color: #74C0FC !important;
     display: inline-block !important;
@@ -813,7 +783,7 @@ body {
 }
 
 .chart-dialog .ui-dialog-titlebar-close:hover:before {
-    color: #ff0000 !important;
+    color: #5085e7 !important;
     transform: scale(1.1) !important;
 }
 
